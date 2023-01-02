@@ -6,13 +6,13 @@ This script scrapes data of differnt spefications of phones from amazon.com
 
 ### Video Demo
 
-video link
+video link: https://youtu.be/5j1JHAFQ0IM
 
 ## Project Structure
 
 - project.py
 - phones.csv
-- project_test.csv
+- project_test.py
 - requirments.txt
 - readme.md
 ## Libraries
@@ -43,3 +43,9 @@ find the desired data it sets '-' as default value
 #### csv_maker
 
 This function takes a Generator object containing dict and converts it into a csv file
+
+#### extenction_cheker
+
+This function check if the inputed name has an extention(.csv) or not
+if the name has extenction(.csv) then it simply returns the name
+else it add the .csv extention and returns it

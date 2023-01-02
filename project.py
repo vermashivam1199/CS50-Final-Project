@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 import time
 from typing import Generator, Tuple, Optional
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.webdriver import WebDriver
 
 
@@ -24,11 +25,25 @@ MODEL_SERVICE_PROVIDER = "//table[@class='a-normal a-spacing-micro']/tbody/tr[@c
 MODEL_BRAND_NAME = "//table[@class='a-normal a-spacing-micro']/tbody/tr[@class='a-spacing-small po-brand']/td[@class='a-span9']/span"
 MODEL_STORAGE = "//table[@class='a-normal a-spacing-micro']/tbody/tr[@class='a-spacing-small po-memory_storage_capacity']/td[@class='a-span9']/span"
 
+def main():
+    """This is the main function it runs whole script"""
+
+    file_name = extenction_cheker(input("File Name: "))
+    pages = input("Pages to be scrapped: ")
+    if pages:
+        pages = int(pages)
+        yeild_from_phone = phones(AMAZON_SMARTPHONES_LINK, setup(), pages)
+    else:
+        yeild_from_phone = phones(AMAZON_SMARTPHONES_LINK, setup())
+    csv_maker(yeild_from_phone, file_name)
+
+
 
 def setup() -> WebDriver:
     """This function returns a WebDriver object"""
 
-    return webdriver.Chrome(ChromeDriverManager().install()) #this function automatically download or update chrome selenium drivers and set its path
+    driver_service = Service(executable_path=ChromeDriverManager().install())
+    return webdriver.Chrome(service=driver_service) #this function automatically download or update chrome selenium drivers and set its path
 
 def phones(link: str, driver: WebDriver, pages: Optional[int]=10) -> Generator[dict, Tuple[str, WebDriver, int], None]:
     """
@@ -105,7 +120,7 @@ def data_extracter(driver: WebDriver) -> Tuple[str]:
 
     try:
         model_price = driver.find_element(By.XPATH, MODEL_PRICE).get_attribute("innerText")
-        final_price = re.search("(\d.+\d)",model_price)
+        final_price = re.search(r"(\d.+\d)",model_price)
         model_price = final_price.group(1)
     except NoSuchElementException:
         model_price = "-"
@@ -161,7 +176,7 @@ def extenction_cheker(n: str) -> str:
     """
     This function check if the inputed name has an extention(.csv) or not
     if the name has extenction(.csv) then it simply returns the name
-    else it add the .csv extention and returns is
+    else it add the .csv extention and returns it
 
     :param str n: file name
     :returns: file name
@@ -172,18 +187,6 @@ def extenction_cheker(n: str) -> str:
         return n
     else:
         return n+".csv"
-
-def main():
-    """This is the main function it runs whole script"""
-
-    file_name = extenction_cheker(input("File Name: "))
-    pages = input("Pages to be scrapped: ")
-    if pages:
-        pages = int(pages)
-        yeild_from_phone = phones(AMAZON_SMARTPHONES_LINK, setup(), pages)
-    else:
-        yeild_from_phone = phones(AMAZON_SMARTPHONES_LINK, setup())
-    csv_maker(yeild_from_phone, file_name)
 
 
 if __name__ == "__main__":
